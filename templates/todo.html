@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="columns has-background-black-ter is-centered has-text-white-bis" style="min-height:101vh;">
+	<!-- на самом деле можно было обойтись и hero, но я обратился к inline-css -->
+	<div class="column is-half">
+    	<h1 class="is-size-3 has-text-centered"> Список задач </h1>
+    	<form action="" method="post">
+        	{% csrf_token %}
+        	<!-- csrf для базовой безопасности нашего приложения -->
+            <div class="field has-text-centered">
+            	<label for="description" class="label has-text-white-bis">Введите задачу</label>
+            	<div class="control">
+             	   <input type="text" id="description" class="input" placeholder="Чем собираетесь заняться"
+                    	name="description" required>
+            	</div>
+        	</div>
+			<div class="columns">
+            	<div class="column">
+                	<label for="status">Статус задачи</label>
+                	<div class="control">
+                    	<div class="select">
+                        	<select id="status" class="select" name="status_select" required>
+                            	<!--поставишь такой required, и не надо пустые поляв бд валидизировать. Не повторять в продакшене-->
+                            	<option class="disabled" value="">Выберите статус задачи</option>
+                    	        {% for status in statuses.fields.name.choices %}
+								<option class="" value="{{ status.1 }}" name="{{ status.1 }}">
+                                    {{ status.1 }}</option>
+                                {% endfor %}
+                        	</select>
+    	                </div>
+                	</div>
+            	</div>
+				<div class="column">
+                	<label for="priority">Приоритет задачи</label>
+                	<div class="control">
+                    	<div class="select">
+                        	<select id="priority" class="select" name="priority_select" required>
+                            	<!--поставишь такой required, и не надо пустые поляв бд валидизировать. Не повторять в продакшене-->
+                            	<option class="disabled" value="">Выберите приоритет задачи</option>
+                    	        {% for priority in priorities.fields.name.choices %}
+ 	                           <option class="" value="{{ priority.1 }}" name="{{ priority.1 }}">
+                                    {{ priority.1 }}</option>
+                            	{% endfor %}
+                        	</select>
+    	                </div>
+                	</div>
+            	</div>
+            	<div class="column">
+                	<label for="dueDate">Выберите дату</label>
+                	<input type="date" id="dueDate" class="input calendar" name="date" required>
+            	</div>
+        	</div>
+        	<div class="column">
+            	<div class="field">
+                	<button class="button is-primary" name="Add" type="submit">
+                    	<span class="icon is-small">
+                        	<i class="fa fa-plus"></i>
+                    	</span>
+                    	<span>Добавить задачу</span>
+                	</button>
+             	   <button class="button is-link" name="Delete" formnovalidate="" type="submit">
+                    	<span class="icon is-small">
+                        	<i class="fa fa-trash-o"></i>
+                    	</span>
+                    	<span>
+                        	Удалить задачу
+                    	</span>
+                	</button>
+            	</div>
+        	</div>
+        	<div class="list is-hoverable">
+            	{% for todo in todos %}
+            	<!-- шаблонный язык django- for loop -->
+            	<div class="list-item">					
+					{% if todo.priority.name == "Высокий приоритет" %}
+						<font color = "red">
+					{% elif todo.priority.name == "Средний приоритет" %}
+						<font color = "orange">
+					{% elif todo.priority.name == "Низкий приоритет" %}	
+						<font color = "green">
+					{% else %}	
+						<font>
+					{% endif %}														
+                		    <label class="checkbox">
+                    		    <input type="checkbox" class=" checkbox" name="checkedbox" value="{{ todo.id }}">
+                    		    <span class="complete-">{{ todo.title }}</span>
+                		    </label>
+                		    <span class=" status-{{ todo.status }} has-text-info">{{ todo.status }}</span>
+						    <strong class="is-pulled-right"><i class="fa fa-calendar"></i>{{ todo.created }} -
+                    		    {{ todo.due_date }}</strong>
+						</font>						
+            	</div>
+            	{% endfor %}
+        	</div>
+    	</form>
+	</div>
+</div>
+{% endblock %}
